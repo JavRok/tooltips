@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Tooltip demo</title>
+        <meta name="description" content="Tooltip demo">
+
+        <style>
+			body {
+				
+			}
+			section {
+				width:60%;
+				margin: 3em auto;
+			}
+			.box {
+				display: inline-block;
+				width: 20em;				
+				min-height: 1em;
+				margin: 0 0 4em; 
+				padding: 1em;
+				line-height: 1.5;
+				color: white;
+				border: 1px solid #4777AF; 
+				background: #6797CF;
+				border-radius: 4px; 				
+				box-shadow: inset 0 0 0 1px #87B7FF; 
+				cursor: pointer;
+			}
+		</style>
+		
+		<link rel="stylesheet" type="text/css" href="tooltip.css">
+    </head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+		<section>
+
+			<h2>Hello world! This is the tooltip demo, nothing fancy. </h2>
+			
+			<div>
+				<div class="box" data-tooltip title="Text is extracted from title attribute if not set in config">			
+					Tooltip on hover
+				</div>
+			</div>
+				
+			<div>
+				<div class="box" data-tooltip='{"showOn":"click", "orientation":"bottom"}' title="Tooltip config can be set through data-tooltip html attribute (no-js)">
+					Tooltip on click
+				</div>
+			</div>
+			
+		</section>
+			
+        <script data-main="require-main" src="require.js"></script>
+    </body>
+</html>

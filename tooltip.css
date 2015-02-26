@@ -1,0 +1,95 @@
+.tooltip {
+	display: block;
+	background: #43b02a;
+	border-radius: 5px;
+	max-width: 300px;
+	width: 300px;
+	position: absolute;
+	padding: 12px 18px;
+	font-family: open-sans-regular, sans-serif;
+	font-size: 14px;
+	color: white;
+	line-height: 22px;
+	box-sizing: border-box;
+	z-index: 1000;
+	outline: none;
+	visibility: hidden;
+}
+
+.tooltip a.close {
+	display: block;
+	color: white;
+	float: right;
+	margin: -5px -7px 0 0;
+	font-size: 1.3em;
+	text-decoration: none;
+}
+
+.tooltip .arrow {
+	width: 0;
+	height: 0;
+	position: absolute;
+	/* Top by default */
+
+	left: 50%;
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	border-top: 10px solid #43b02a;
+	margin-top: -10px;
+	margin-left: -10px;
+	bottom: -10px;
+}
+
+.tooltip.bottom .arrow {
+	top: 0;
+	left: 50%;
+	border-top: none;
+	border-bottom: 10px solid #43b02a;
+}
+
+.tooltip.right .arrow {
+	top: 50%;
+	left: 0;
+	border-bottom: 10px solid transparent;
+	border-top: 10px solid transparent;
+	border-left: none;
+	border-right: 10px solid #43b02a;
+}
+
+.tooltip.left .arrow {
+	top: 50%;
+	left: auto;
+	right: -10px;
+	border-bottom: 10px solid transparent;
+	border-top: 10px solid transparent;
+	border-left: 10px solid #43b02a;
+	border-right: none;
+}
+
+
+/*********   Custom classes/skins for specific cases   **********/
+
+.tooltip.mandatory-fiber {
+	margin-right: 2.2em;
+	max-width: none;
+	position: relative;
+	width: auto;
+}
+
+.tooltip.dark-opacity {
+	background-color: rgba(102,102,102, 0.6);
+}
+.tooltip.dark-opacity .arrow {
+	border-top-color: rgba(102,102,102, 0.6);
+}
+.tooltip.bottom.dark-opacity .arrow {
+	border-bottom-color: rgba(102,102,102, 0.6);
+}
+.tooltip.left.dark-opacity .arrow {
+	border-left-color: rgba(102,102,102, 0.6);
+	border-top-color: transparent;
+}
+.tooltip.right.dark-opacity .arrow {
+	border-right-color: rgba(102,102,102, 0.6);
+	border-top-color: transparent;
+}
