@@ -21,7 +21,7 @@ define('Tooltip', function () {
 			class: '',
 			orientation: '',
 			showOn: 'hover',
-			closeIcon: true			
+			closeIcon: true
 		};
 
 		// Will contain the tooltip DOM Node
@@ -38,7 +38,7 @@ define('Tooltip', function () {
 	 *  @config {string} [class] - Extra class for custom styling
 	 *  @config {string} [orientation='top'] - top, bottom, left or right
 	 *  @config {string} [showOn='load'] - load|hover|click|... Load will show it from the beginning
-	 *  @config {boolean} [closeIcon=true] - If to show Close icon on the tooltip	 
+	 *  @config {boolean} [closeIcon=true] - If to show Close icon on the tooltip
 	 */
 	TooltipClass.prototype.setOptions = function (options) {
 		var config = this.config;
@@ -48,7 +48,7 @@ define('Tooltip', function () {
 			}
 			if(options.orientation) {
 				config.orientation = options.orientation;
-			}			
+			}
 			if(options.position) {
 				config.position = options.position;
 			}
@@ -89,7 +89,7 @@ define('Tooltip', function () {
 			tooltip.appendChild(close);
 		}
 
-		arrow.className = "arrow";		
+		arrow.className = "arrow";
 		tooltip.appendChild(arrow);
 
 		if (!text) {
@@ -155,7 +155,6 @@ define('Tooltip', function () {
 	 * ONLY for orientation bottom/top. TODO for left/right
 	 */
 	TooltipClass.prototype.arrowAutoPositioning = function () {
-		if (this.config.arrowLeft !== "") return;
 
 		var left = this.element.offsetLeft,
 			width = this.element.clientWidth;
@@ -252,6 +251,9 @@ define('Tooltip', function () {
 	// Object module to return
 	var Tooltip = {};
 
+	// Keep a reference to all created tooltips
+	var existingTooltips = [];
+
 	/*
 	 * Creates a tooltip next to an element
 	 * @return {TooltipClass} - Tooltip object.
@@ -294,6 +296,8 @@ define('Tooltip', function () {
 			tooltip.arrowAutoPositioning();
 		}
 
+		existingTooltips.push(tooltip);
+
 		return tooltip;
 	};
 
@@ -302,9 +306,23 @@ define('Tooltip', function () {
 	 * Destroys the tooltip and removes the events
 	 */
 	Tooltip.destroy = function (tooltip) {
+		nullifyTooltip(tooltip);
+		existingTooltips.pop(tooltip);
+	};
+	/* Separated function to avoid loop problems on the array */
+	function nullifyTooltip (tooltip) {
 		tooltip.destroyEvents();
 		tooltip.node.parentNode.removeChild(tooltip.node);
+	}
+
+	/*
+	 * Helper function to remove all active tooltips
+	 */
+	Tooltip.destroyAll = function () {
+		existingTooltips.forEach(nullifyTooltip);
+		existingTooltips = [];
 	};
+
 
 
 	/**
@@ -315,11 +333,10 @@ define('Tooltip', function () {
 	}
 
 
+
 	/* Init tooltip by default for elements with data-tooltip attributes 
-	* data-tooltip is expected to have a hardcoded JSON object 
-	*/
-	
-	
+	 * data-tooltip is expected to have a hardcoded JSON object
+	 */
 	var elements = document.querySelectorAll ("[data-tooltip]");
 	for (var i= 0, len = elements.length; i < len; i++) {
 		var config = elements[i].getAttribute("data-tooltip");
@@ -328,7 +345,7 @@ define('Tooltip', function () {
 		} else {
 			config = undefined;
 		}
-			
+
 		Tooltip.create(elements[i], config);
 	}
 
