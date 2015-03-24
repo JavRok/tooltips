@@ -39,6 +39,7 @@ define('Tooltip', function () {
 	 *  @config {string} [orientation='top'] - top, bottom, left or right
 	 *  @config {string} [showOn='load'] - load|hover|click|... Load will show it from the beginning
 	 *  @config {boolean} [closeIcon=true] - If to show Close icon on the tooltip
+	 *  @config {boolean} [persistent=false] - If tooltip should stay when clicking outside. False by default, except for showOn=load
 	 */
 	TooltipClass.prototype.setOptions = function (options) {
 		var config = this.config;
@@ -61,6 +62,13 @@ define('Tooltip', function () {
 			if(options.text) {
 				config.text = options.text;
 			}
+			// Let's assume an onLoad should be persistent
+			if(options.showOn === "load") {
+				config.persistent = true;
+			}
+			if(options.persistent) {
+				config.persistent = options.persistent;
+			}
 		}
 	};
 
@@ -77,21 +85,6 @@ define('Tooltip', function () {
 
 		tooltip.className = config.orientation + " tooltip "+ config.class;
 
-		if (config.closeIcon) {
-			close.className = "close";
-			close.href = "#";
-			close.textContent = "✖";
-			close.addEventListener('click', function(evt) {
-				evt.preventDefault();
-				evt.stopPropagation();
-				self.hide();
-			}, false);
-			tooltip.appendChild(close);
-		}
-
-		arrow.className = "arrow";
-		tooltip.appendChild(arrow);
-
 		if (!text) {
 			if (!config.text) {
 				text = "This tooltip text must be set with title or data-tooltip attribute";
@@ -101,7 +94,24 @@ define('Tooltip', function () {
 			}
 		}
 
-		tooltip.appendChild(document.createTextNode(text));
+		tooltip.innerHTML = text;
+
+		if (config.closeIcon) {
+			close.className = "close";
+			close.href = "#";
+			close.textContent = "✖";
+			close.addEventListener('click', function(evt) {
+				evt.preventDefault();
+				evt.stopPropagation();
+				self.hide();
+			}, false);
+			// == prepend
+			tooltip.insertBefore(close, tooltip.childNodes[0]);
+		}
+
+		arrow.className = "arrow";
+		tooltip.appendChild(arrow);
+
 		// Make it focusable
 		tooltip.tabIndex = -1;
 
@@ -111,7 +121,7 @@ define('Tooltip', function () {
 		return tooltip;
 	};
 
-
+	
 	/**
 	 * Automatically position tooltip, depending on orientation
 	 */
@@ -127,20 +137,20 @@ define('Tooltip', function () {
 
 		switch(this.config.orientation) {
 			case 'left':
-				tooltipLeft = left - tooltipWidth - arrowSize;
+				tooltipLeft = left - tooltipWidth - arrowSize - 5;
 				tooltipTop = top - (tooltipHeight/2 - height/2);
 				break;
 			case 'right':
-				tooltipLeft = left + width + arrowSize;
+				tooltipLeft = left + width + arrowSize + 5;
 				tooltipTop = top - (tooltipHeight/2 - height/2);
 				break;
 			case 'bottom':
-				tooltipTop = top + height + arrowSize;
+				tooltipTop = top + height + arrowSize + 5;
 				tooltipLeft = left - (tooltipWidth/2 - width/2);
 				break;
 			case 'top':
 			default:
-				tooltipTop = top - tooltipHeight - arrowSize;
+				tooltipTop = top - tooltipHeight - arrowSize - 5;
 				tooltipLeft = left - (tooltipWidth/2 - width/2);
 				break;
 		}
@@ -189,10 +199,14 @@ define('Tooltip', function () {
 		if (config.showOn === "hover") {
 			element.addEventListener('mouseover', this.listenerShow, false);
 			element.addEventListener('mouseout', this.listenerHide, false);
-		} else if(config.showOn !== "load" ) {
-			// Standard event
-			element.addEventListener(config.showOn, this.listenerShow, false);
-			this.node.addEventListener('blur', this.listenerHide, true);
+		} else {
+			if(config.showOn !== "load" ) {
+				// Standard event
+				element.addEventListener(config.showOn, this.listenerShow, false);
+			}
+			if (!config.persistent) {
+				this.node.addEventListener('blur', this.listenerHide, true);
+			}
 		}
 
 	};
@@ -287,8 +301,8 @@ define('Tooltip', function () {
 			tooltip.show();
 		} else {
 			tooltip.hide();
-			tooltip.attachEvents();
 		}
+		tooltip.attachEvents();
 
 		if (tooltip.config.position === 'auto') {
 			tooltip.absolutePositioning();
@@ -312,7 +326,9 @@ define('Tooltip', function () {
 	/* Separated function to avoid loop problems on the array */
 	function nullifyTooltip (tooltip) {
 		tooltip.destroyEvents();
-		tooltip.node.parentNode.removeChild(tooltip.node);
+		if (tooltip.node.parentNode) {
+			tooltip.node.parentNode.removeChild(tooltip.node);	
+		}
 	}
 
 	/*
