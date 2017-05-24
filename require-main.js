@@ -1,7 +1,8 @@
  
 require.config({
     paths: {
-        Tooltip: 'tooltip-require'
+        // Tooltip: 'tooltip-require'
+        Tooltip: 'tooltips'
     }
 });
 
