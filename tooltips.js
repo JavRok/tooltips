@@ -5,10 +5,12 @@
  */
 
 define(function () {
-
 	"use strict";
 
 	var zIndexCounter = 6;
+
+	// Minimum width of tooltip in pixels, since it can be resized to fit screen
+	var minWidth = 130;
 
 	/**
 	 * Constructor for TooltipClass
@@ -123,43 +125,62 @@ define(function () {
 		return tooltip;
 	};
 
+	TooltipClass.prototype.changeOrientation = function (newOrientation) {
+		this.config.orientation = newOrientation;
+		var classlist = this.node.classList;
+		classlist.remove('left');
+		classlist.remove('right');
+		classlist.remove('top');
+		classlist.remove('bottom');
+		classlist.add(newOrientation);
+	}
+
     // Restrict size if Tooltip is too big (or viewport too small)
-    TooltipClass.prototype.restrictWidth = function () {
-        var minWidth = 100;
+    TooltipClass.prototype.restrictWidth = function (elementLeft, elementWidth) {
+
         var tooltipWidth = this.node.clientWidth;
-        if (window.innerWidth < tooltipWidth) {
-            console.log('Tooltip too wide ', tooltipWidth, ' new width:', window.innerWidth);
-            tooltipWidth = window.innerWidth < minWidth? minWidth : window.innerWidth;
-            this.node.style.width = tooltipWidth + "px";
-            // Since viewport is too small, left or right is not possible any more
-            if (this.config.orientation === 'left' || this.config.orientation === 'right') {
-                this.config.orientation = 'top';
-                var classlist = this.node.classList;
-                classlist.remove('left');
-                classlist.remove('right');
-                classlist.add('top');
-            }
-        }
+		var windowWidth = window.innerWidth;
+
+		// Check if tooltip fits in the viewport, left or right side
+		if (this.config.orientation === "left" || this.config.orientation === "right") {
+			var elementRight = windowWidth - (elementLeft + elementWidth);
+			var spaceForTooltip = (this.config.orientation === "right") ? elementRight : elementLeft;
+			var arrowHorizontal = arrowSize*2;
+			if (spaceForTooltip < tooltipWidth + arrowHorizontal) {
+				if (spaceForTooltip < minWidth + arrowHorizontal) {
+					this.changeOrientation('top');
+				} else {
+					tooltipWidth = spaceForTooltip - arrowHorizontal;
+				}
+			}
+		}
+
+		// Check if tooltip is wider than the viewport (top/bottom), only for really small screens
+		if (this.config.orientation === "top" || this.config.orientation === "bottom") {
+			if (windowWidth < tooltipWidth) {
+				tooltipWidth = (windowWidth < minWidth) ? minWidth : windowWidth;
+			}
+		}
+
+		this.node.style.width = tooltipWidth + "px";
         return tooltipWidth;
     };
 
-    // If tooltip is out of viewport, put it back in
+	/**
+	 * If tooltip is out of viewport, put it back in. Also repositions arrow to align with the element
+	 */
     TooltipClass.prototype.fitInViewHorizontal = function (tooltipLeft, tooltipWidth) {
         var scrollLeft = window.pageXOffset;
-
-        if (this.arrow.style.left !== "") {
-            this.arrow.style.left = "";
-        }
+		var arrowLeft = this.arrow.offsetLeft;
 
         // Tooltip is partially out of viewport (left)
         var offsetLeft =  scrollLeft - tooltipLeft;
         if (offsetLeft > 0) {
             tooltipLeft = scrollLeft;
             // Reposition the arrow to the original snap point, with a limit
-            var limitLeft = arrowSize*2;
-            var arrowLeft = this.arrow.offsetLeft - offsetLeft;
+            var limitLeft = arrowSize * 2;
+            arrowLeft -= offsetLeft;
             arrowLeft = (arrowLeft < limitLeft) ? limitLeft : arrowLeft;
-            this.arrow.style.left = arrowLeft + "px";
 
         } else {
             // Tooltip is partially out of viewport (right)
@@ -169,19 +190,23 @@ define(function () {
                 tooltipLeft = tooltipLeft - offsetRight;
                 // Reposition the arrow to the original snap point, with a limit
                 var limitRight = tooltipWidth - arrowSize*2;
-                arrowLeft = this.arrow.offsetLeft + offsetRight;
+                arrowLeft += offsetRight;
                 arrowLeft = (arrowLeft > limitRight) ? limitRight : arrowLeft;
-                this.arrow.style.left = arrowLeft + "px";
             }
         }
+		this.arrow.style.left = arrowLeft + "px";
 
-        return tooltipLeft;
+		return tooltipLeft;
     };
 
 	/**
 	 * Automatically position tooltip, depending on orientation
 	 */
 	TooltipClass.prototype.absolutePositioning  = function () {
+		// Reset previously set styles, in case of resizing
+		this.arrow.style.left = "";
+		this.node.style.width = "";
+
 		var element = this.element;
 		var left = element.offsetLeft,
 			top = element.offsetTop,
@@ -189,7 +214,7 @@ define(function () {
 			height = element.clientHeight,
            	tooltipHeight, tooltipTop, tooltipLeft;
 
-        var tooltipWidth = this.restrictWidth();
+        var tooltipWidth = this.restrictWidth(left, width);
 
         tooltipHeight = this.node.clientHeight;
 		switch(this.config.orientation) {
@@ -203,17 +228,18 @@ define(function () {
 				break;
 			case 'bottom':
 				tooltipTop = top + height + arrowSize + 5;
-				tooltipLeft = left - (tooltipWidth/2 - width/2);
+				tooltipLeft = left - (tooltipWidth/2 - width/2) + arrowSize;
+				// Reposition tooltip if out of viewport
+				tooltipLeft = this.fitInViewHorizontal(tooltipLeft, tooltipWidth);
 				break;
 			case 'top':
 			default:
 				tooltipTop = top - tooltipHeight - arrowSize - 5;
-                tooltipLeft = left - (tooltipWidth/2 - width/2);
+                tooltipLeft = left - (tooltipWidth/2 - width/2) + arrowSize;
+				// Reposition tooltip if out of viewport
+				tooltipLeft = this.fitInViewHorizontal(tooltipLeft, tooltipWidth);
 				break;
 		}
-
-		// Reposition tooltip if out of viewport
-        tooltipLeft = this.fitInViewHorizontal(tooltipLeft, tooltipWidth);
 
 		this.node.style.top = tooltipTop + "px" ;
 		this.node.style.left = tooltipLeft + "px" ;

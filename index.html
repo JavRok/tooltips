@@ -18,7 +18,7 @@
 			}
 			.box {
 				display: inline-block;
-				width: 15em;
+				width: 5em;
 				min-height: 1em;
 				margin: 0 1em 4em;
 				padding: 1em;
@@ -53,14 +53,12 @@
 			</div>
 
 
-
-			<div class="box box--small" data-tooltip title="Text is extracted from title attribute if not set in config">
+			<div class="box box--small" data-tooltip='{"orientation":"left"}' title="Text is extracted from title attribute if not set in config">
 				Tooltip on hover
 			</div>
 
-				
 
-			<div class="box" data-tooltip='{"showOn":"click", "orientation":"bottom"}' title="Tooltip config can be set through data-tooltip html attribute (no-js)">
+			<div class="box" data-tooltip='{"showOn":"click", "orientation":"right"}' title="Tooltip config can be set through data-tooltip html attribute (no-js)">
 				Tooltip on click
 			</div>
 
