@@ -7,10 +7,15 @@
 define(function () {
 	"use strict";
 
-	var zIndexCounter = 6;
-
 	// Minimum width of tooltip in pixels, since it can be resized to fit screen
 	var minWidth = 130;
+
+    // z-index order that increases for every new tooltip
+    var zIndexCounter = 6;
+
+    // Arrow smaller side size, being a 2x1 rectangle
+    var arrowSize = 10;  // px
+
 
 	/**
 	 * Constructor for TooltipClass
@@ -22,10 +27,11 @@ define(function () {
 		// Default config
 		this.config = {
 			position: 'auto',
-			class: 'darkgrey',
-			orientation: '',
+			class: '',
+			orientation: 'top',
 			showOn: 'hover',
-			closeIcon: true
+			closeIcon: false,
+            text: 'This tooltip text must be set with title or data-tooltip attribute'
 		};
 
 		// Will contain the tooltip DOM Node
@@ -33,7 +39,6 @@ define(function () {
 		this.arrow = null;
 	}
 
-	var arrowSize = 10;  // px
 
 	/** Override default options. Probably there's a better way to do this
 	 * @params {object} options An object with the options for the tooltip, possible options are:
@@ -48,31 +53,26 @@ define(function () {
 	TooltipClass.prototype.setOptions = function (options) {
 		var config = this.config;
 		if (options) {
-			if(options["class"]) {
-				config["class"] = options["class"];
-			}
-			if(options.orientation) {
-				config.orientation = options.orientation;
-			}
-			if(options.position) {
-				config.position = options.position;
-			}
-			if(options.showOn) {
-				config.showOn = options.showOn;
-			}
-			if(options.closeIcon !== undefined) {
-				config.closeIcon = options.closeIcon;
-			}
-			if(options.text) {
-				config.text = options.text;
-			}
-			// Let's assume an onLoad should be persistent
-			if(options.showOn === "load") {
+            // TODO: Object extend ?
+            config.position = options.position ? options.position : config.position;
+		    config["class"] = options["class"] ? options["class"] : config["class"];
+            config.orientation = options.orientation ? options.orientation : config.orientation;
+            config.showOn = options.showOn ? options.showOn : config.showOn;
+            config.text = options.text ? options.text : config.text;
+
+			// Let's assume that onLoad and onClick should be persistent
+			if(options.showOn === "load" || options.showOn === "click") {
 				config.persistent = true;
 			}
+
 			if(options.persistent !== undefined) {
 				config.persistent = options.persistent;
+                if (config.persistent) {
+                    config.closeIcon = true;
+                }
 			}
+
+            config.closeIcon = (options.closeIcon !== undefined) ? options.closeIcon : config.closeIcon;
 		}
 	};
 
@@ -87,13 +87,10 @@ define(function () {
 			config = this.config,
 			self = this;
 
-		tooltip.className = config.orientation + " tooltip "+ config["class"];
+		tooltip.className = 'tooltip-' + config.orientation + ' tooltip ' + config["class"];
 
 		if (!text) {
-			if (!config.text) {
-				text = "This tooltip text must be set with title or data-tooltip attribute";
-			}
-			else {
+			if (config.text) {
 				text = config.text;
 			}
 		}
@@ -101,7 +98,7 @@ define(function () {
 		tooltip.innerHTML = text;
 
 		if (config.closeIcon) {
-			close.className = "close icon icon_cross";
+			close.className = "tooltip-close icon icon_cross";
 			close.href = "#";
 			// close.textContent = "✖";
 			close.addEventListener('click', function(evt) {
@@ -113,7 +110,7 @@ define(function () {
 			tooltip.insertBefore(close, tooltip.childNodes[0]);
 		}
 
-		arrow.className = "arrow";
+		arrow.className = "tooltip-arrow";
 		tooltip.appendChild(arrow);
 
 		// Make it focusable
@@ -128,11 +125,11 @@ define(function () {
 	TooltipClass.prototype.changeOrientation = function (newOrientation) {
 		this.config.orientation = newOrientation;
 		var classlist = this.node.classList;
-		classlist.remove('left');
-		classlist.remove('right');
-		classlist.remove('top');
-		classlist.remove('bottom');
-		classlist.add(newOrientation);
+		classlist.remove('tooltip-left');
+		classlist.remove('tooltip-right');
+		classlist.remove('tooltip-top');
+		classlist.remove('tooltip-bottom');
+		classlist.add('tooltip-' + newOrientation);
 	}
 
     // Restrict size if Tooltip is too big (or viewport too small)
@@ -337,23 +334,6 @@ define(function () {
 		}
 	}
 
-	/*TooltipClass.prototype.destroyEvents = function () {
-	 var config = this.config;
-
-	 if (config.showOn === "hover") {
-	 this.element.removeEventListener('mouseover', this.listenerShow, false);
-	 this.element.removeEventListener('mouseout', this.listenerHide, false);
-	 } else if (config.showOn === "focus") {
-	 this.element.removeEventListener('focus', this.listenerShow, false);
-	 this.element.removeEventListener('blur', this.listenerHide, false);
-	 } else if (config.showOn !== "load") {
-	 this.element.removeEventListener(config.showOn, this.listenerShow, false);
-	 document.body.removeEventListener('click', this.bodyClickListener, false);
-	 }
-	 };*/
-
-
-
 
 	/*
 	 * Hides all the tooltips attached to an element (to show a new one for example)
@@ -367,7 +347,7 @@ define(function () {
 
 
 	/**
-	 * Show the tooltip. Uses visibility instead of display, to correct calculation of position.
+	 * Show the tooltip. Uses visibility instead of display, for correct position calculation
 	 */
 	TooltipClass.prototype.show = function () {
 		if (!isVisible(this.element)) {
@@ -441,7 +421,7 @@ define(function () {
 		// Does the tooltip already exist? We allow several tooltips as long as they have different classes ("error"...)
 		var existing = element.parentNode.querySelectorAll(".tooltip");
 		forEach(existing, function (node, i) {
-			if (options && node.classList.contains(options.class)) {
+			if (options && node.classList.contains(options["class"])) {
 				node.parentNode.removeChild(node);
 			}
 		});
@@ -479,7 +459,7 @@ define(function () {
 	 * @return {Tooltip} or null if not found
 	 */
 	function getTooltipFromNode(node) {
-		for (var i=0; i<existingTooltips.length; i++) {
+		for (var i=0; i < existingTooltips.length; i++) {
 			if (existingTooltips[i].node == node)
 				return existingTooltips[i];
 		}

@@ -7,5 +7,11 @@ require.config({
 });
 
 require(['Tooltip'], function(Tooltip) {
-	//
+    var reference = Tooltip.create(
+        document.getElementById('js_example'),
+        {
+            'orientation': 'right',
+            'showOn': 'click'
+        }
+    );
 });

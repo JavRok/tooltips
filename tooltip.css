@@ -16,7 +16,7 @@
 	visibility: hidden;
 }
 
-.tooltip a.close {
+.tooltip-close {
 	display: block;
 	color: white;
 	float: right;
@@ -25,7 +25,17 @@
 	text-decoration: none;
 }
 
-.tooltip .arrow {
+.tooltip .icon::before {
+	display: block;
+	content: "";
+	width: 1em;
+	height: 1em;
+}
+.tooltip .icon.icon_cross::before {
+	content: "x";
+}
+
+.tooltip-arrow {
 	width: 0;
 	height: 0;
 	position: absolute;
@@ -40,14 +50,14 @@
 	bottom: -10px;
 }
 
-.tooltip.bottom .arrow {
+.tooltip-bottom .tooltip-arrow {
 	top: 0;
 	left: 50%;
 	border-top: none;
 	border-bottom: 10px solid #43b02a;
 }
 
-.tooltip.right .arrow {
+.tooltip-right .tooltip-arrow {
 	top: 50%;
 	left: 0;
 	border-bottom: 10px solid transparent;
@@ -56,7 +66,7 @@
 	border-right: 10px solid #43b02a;
 }
 
-.tooltip.left .arrow {
+.tooltip-left .tooltip-arrow {
 	top: 50%;
 	left: auto;
 	right: -10px;
@@ -79,17 +89,17 @@
 .tooltip.dark-opacity {
 	background-color: rgba(102,102,102, 0.6);
 }
-.tooltip.dark-opacity .arrow {
+.tooltip.dark-opacity .tooltip-arrow {
 	border-top-color: rgba(102,102,102, 0.6);
 }
-.tooltip.bottom.dark-opacity .arrow {
+.tooltip-bottom.dark-opacity .tooltip-arrow {
 	border-bottom-color: rgba(102,102,102, 0.6);
 }
-.tooltip.left.dark-opacity .arrow {
+.tooltip-left.dark-opacity .tooltip-arrow {
 	border-left-color: rgba(102,102,102, 0.6);
 	border-top-color: transparent;
 }
-.tooltip.right.dark-opacity .arrow {
+.tooltip-right.dark-opacity .tooltip-arrow {
 	border-right-color: rgba(102,102,102, 0.6);
 	border-top-color: transparent;
 }
