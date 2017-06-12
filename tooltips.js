@@ -62,7 +62,7 @@ define(function () {
 
 			// Let's assume that onLoad and onClick should be persistent
 			if(options.showOn === "load" || options.showOn === "click") {
-				config.persistent = true;
+				options.persistent = true;
 			}
 
 			if(options.persistent !== undefined) {

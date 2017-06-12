@@ -10,17 +10,17 @@
 
         <style>
 			body {
-				
+				padding: 1em;
 			}
 			section {
 				min-width: 20em;
-				margin: 3em auto;
+				margin: 2em auto;
 			}
 			.box {
-				display: inline-block;
+				display: block;
 				width: 15em;
 				min-height: 1em;
-				margin: 0 1em 4em;
+				margin: 3em 0;
 				padding: 1em;
 				line-height: 1.5;
 				color: white;
@@ -34,6 +34,37 @@
 			.box--small {
 				width: 5em;
 			}
+
+			.icon-circle {
+				display: inline-block;
+				background: #4777AF;
+				width: 1em;
+				height: 1em;
+				margin-left: 0.5em;
+				font-size: 1.5em;
+				color: white;
+				cursor: pointer;
+				text-align: center;
+				border: 1px solid black;
+				border-radius: 50%;
+				vertical-align: baseline;
+				line-height: 1;
+			}
+			.icon::before {
+				content: "";
+				font-family: "Comic Sans MS", arial, helvetica, sans-serif;
+				width: 1em;
+				height: 1em;
+				speak: none;
+				text-decoration: inherit;
+				text-transform: none;
+				text-rendering: optimizeLegibility;
+				-webkit-font-smoothing: antialiased;
+			}
+			.icon__info::before {
+				content: "i";
+			}
+
 		</style>
 		
 		<link rel="stylesheet" type="text/css" href="tooltip.css">
@@ -45,26 +76,29 @@
 
 		<section>
 
-			<h2>Hello world! This is the tooltip demo, nothing fancy. </h2>
+			<h2>This is the tooltip demo, nothing fancy.
+
+			</h2>
+			<p>
+				Hover here -> <span class="icon icon-circle icon__info" data-tooltip title="Text is extracted from 'title' attribute if not set in config"></span>
+			</p>
 			
-
-			<div class="box" data-tooltip title="Text is extracted from title attribute if not set in config">
-				Tooltip on hover
+			<div class="box" data-tooltip='{"showOn":"load", "orientation":"right", "closeIcon": true}' title="You can set the options in the 'data-tooltip' HTML inline attribute (no JS)">
+				Tooltip on load, with options inline
 			</div>
 
-
-			<div class="box box--small" data-tooltip='{"orientation":"left", "closeIcon": true}' title="Text is extracted from title attribute if not set in config">
-				Tooltip on hover
-			</div>
-
-
-			<div class="box" data-tooltip='{"showOn":"click", "orientation":"right"}' title="Tooltip config can be set through data-tooltip html attribute (no-js)">
+			<div class="box box--small" data-tooltip='{"showOn":"click", "orientation":"right"}' title="Tooltips are fully responsive (try resizing or on your mobile phone)">
 				Tooltip on click
 			</div>
 
 			<div class="box" id="js_example" title="Text is extracted from title attribute if not set in config">
 				Tooltip with JS
 			</div>
+
+			<label>
+				Tooltip on focus
+				<input type="text" placeholder="type something" id="input-text">
+			</label>
 
 			
 		</section>

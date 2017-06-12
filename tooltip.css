@@ -8,6 +8,7 @@
 	padding: 12px 18px;
 	font-family: open-sans-regular, sans-serif;
 	font-size: 14px;
+	font-weight: 600;
 	color: white;
 	line-height: 22px;
 	box-sizing: border-box;
@@ -20,8 +21,8 @@
 	display: block;
 	color: white;
 	float: right;
-	margin: -5px -7px 0 0;
-	font-size: 1.3em;
+	margin: -9px -12px 0 0;
+	font-size: 1.2em;
 	text-decoration: none;
 }
 
@@ -32,7 +33,7 @@
 	height: 1em;
 }
 .tooltip .icon.icon_cross::before {
-	content: "x";
+	content: "✖";
 }
 
 .tooltip-arrow {
