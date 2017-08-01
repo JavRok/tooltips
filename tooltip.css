@@ -1,9 +1,9 @@
 .tooltip {
 	display: block;
 	background: #43b02a;
-	border-radius: 5px;
-	max-width: 300px;
-	width: 300px;
+	border-radius: 3px;
+	max-width: 380px;
+	width: 380px;
 	position: absolute;
 	padding: 12px 18px;
 	font-family: open-sans-regular, sans-serif;
@@ -12,18 +12,19 @@
 	color: white;
 	line-height: 22px;
 	box-sizing: border-box;
-	z-index: 1000;
-	outline: none;
+	z-index: 3;
+	text-transform: none;
 	visibility: hidden;
+	outline: 0;
 }
 
 .tooltip-close {
 	display: block;
-	color: white;
 	float: right;
-	margin: -9px -12px 0 0;
-	font-size: 1.2em;
+	margin: -9px -14px 0 5px;
 	text-decoration: none;
+	color: white;
+	font-size: 1.2em;
 }
 
 .tooltip .icon::before {
@@ -41,52 +42,44 @@
 	height: 0;
 	position: absolute;
 	/* Top by default */
-
 	left: 50%;
-	border-left: 10px solid transparent;
-	border-right: 10px solid transparent;
-	border-top: 10px solid #43b02a;
-	margin-top: -10px;
-	margin-left: -10px;
-	bottom: -10px;
+	border-left: 6px solid transparent;
+	border-right: 6px solid transparent;
+	border-top: 6px solid #43b02a;
+	margin-top: -6px;
+	margin-left: -6px;
+	bottom: -5.45px;
 }
 
 .tooltip-bottom .tooltip-arrow {
-	top: 0;
+	top: 0.6px;
 	left: 50%;
 	border-top: none;
-	border-bottom: 10px solid #43b02a;
+	border-bottom: 6px solid #43b02a;
 }
 
 .tooltip-right .tooltip-arrow {
 	top: 50%;
 	left: 0;
-	border-bottom: 10px solid transparent;
-	border-top: 10px solid transparent;
+	border-bottom: 6px solid transparent;
+	border-top: 6px solid transparent;
 	border-left: none;
-	border-right: 10px solid #43b02a;
+	border-right: 7px solid #43b02a;
 }
 
 .tooltip-left .tooltip-arrow {
 	top: 50%;
 	left: auto;
-	right: -10px;
-	border-bottom: 10px solid transparent;
-	border-top: 10px solid transparent;
-	border-left: 10px solid #43b02a;
-	border-right: none;
+	border-bottom: 6px solid transparent;
+	border-top: 6px solid transparent;
+	border-left: none;
+	border-right: 7px solid #43b02a;
 }
 
 
-/*********   Custom classes/skins for specific cases   **********/
+/*********   Custom skins   **********/
 
-.tooltip.mandatory-fiber {
-	margin-right: 2.2em;
-	max-width: none;
-	position: relative;
-	width: auto;
-}
-
+/* Dark opacity */
 .tooltip.dark-opacity {
 	background-color: rgba(102,102,102, 0.6);
 }
@@ -102,5 +95,24 @@
 }
 .tooltip-right.dark-opacity .tooltip-arrow {
 	border-right-color: rgba(102,102,102, 0.6);
+	border-top-color: transparent;
+}
+
+/* Error (red) skin */
+.tooltip.tooltip-error {
+	background-color: #E4002B;
+}
+.tooltip.tooltip-error .tooltip-arrow {
+	border-top-color: #E4002B;
+}
+.tooltip.tooltip-error.tooltip-bottom .tooltip-arrow {
+	border-bottom-color: #E4002B;
+}
+.tooltip.tooltip-error.tooltip-left .tooltip-arrow {
+	border-left-color: #E4002B;
+	border-top-color: transparent;
+}
+.tooltip.tooltip-error.tooltip-right .tooltip-arrow {
+	border-right-color: #E4002B;
 	border-top-color: transparent;
 }

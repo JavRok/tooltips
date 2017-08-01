@@ -103,7 +103,31 @@
 			
 		</section>
 			
-        <script data-main="require-main" src="require.js"></script>
+		<script type="text/javascript" src="tooltip.js"></script>
+		<script type="text/javascript">
+			// Simple way of loading. We could use a module bundler like Webpack, RequireJS, etc.
+			(function () {			
+				if (!window.Tooltip) return;
+			    var reference = Tooltip.create(
+					document.getElementById('js_example'),
+					{
+						'orientation': 'bottom',
+						'showOn': 'hover'
+					}
+				);
+
+				// Input focus
+				var reference2 = Tooltip.create(
+					document.getElementById('input-text'),
+					{
+						'orientation': 'right',
+						'showOn': 'focus',
+						'text': 'You can set any kind of DOM event, including focus, click, keydown, mouseover... Also this is a different skin',
+						'class': 'tooltip-error'
+					}
+				);
+			})();
+		</script>        
 
     </body>
 </html>
